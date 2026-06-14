@@ -4,6 +4,31 @@
 
 Claude Code for VSCode doesn't have any share function I could find, so it is logged in textual form
 
+## 2026-06-14 — Improve README (Claude Code / Sonnet 4.6)
+
+**Prompt:** "Improve the README.md and document again in AI_USAGE.md what you
+did."
+
+**What was done:** Rewrote `README.md`. The previous version only had the
+"Time" log plus "Setup"/"Usage" sections, and the "Usage" code blocks used the
+acute-accent character `´´´` instead of backtick fences `` ``` ``, so they
+rendered as plain text instead of code blocks. Changes:
+
+- Added a short project description at the top (Express + TypeScript wrapper
+  around the iRail API).
+- Added an "Endpoints" section documenting `GET /` (health check),
+  `GET /departures?q=...` (incl. the 3-char minimum and 405-on-other-methods
+  behaviour), and `GET /docs` (Swagger UI).
+- Fixed the "Usage" code blocks to use proper triple-backtick fences.
+- Added a "Configuration" section documenting the `PORT` env var from
+  `.env.example`, and a step in "Setup" to copy `.env.example` to `.env`.
+- Kept the existing "Time:" time-tracking log as-is at the bottom.
+
+Verified by running `npx tsx src/server.ts` and checking with `curl` that
+`GET /` returns 200 "Hello, World!", `GET /docs` resolves (301 redirect from
+swagger-ui-express, as expected), and `GET /departures?q=ab` returns the
+documented 400 validation error.
+
 ## 2026-06-14 — Generate OpenAPI docs for routers (Claude Code / Sonnet 4.6)
 
 **Prompt:** "Generate OpenAPI docs for the current routers, using the sample
