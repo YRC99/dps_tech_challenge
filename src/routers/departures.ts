@@ -3,6 +3,7 @@ import type { Station } from "../models/Station.js";
 import axios from "axios";
 import { timeLogger } from "../middlewares/timeLogger.js";
 import type { LiveboardResponse } from "../models/responses/LiveboardResponse.js";
+import Fuse from "fuse.js";
 type DeparturesQuery = {
   q?: string;
 };
@@ -24,10 +25,14 @@ export function departuresRouter(stations: Station[]) {
         });
         return;
       }
-      //fetched q from query paramters, now search stations
-      const candidates = stations.filter((station) => {
-        return station.name.toLowerCase().includes(search.toLowerCase());
+      const fuse = new Fuse(stations, {
+        keys: ["name", "standardname"],
+        threshold: 0.3,
+        ignoreLocation: true,
+        isCaseSensitive: false,
       });
+      const candidates = fuse.search(search).map((result) => result.item);
+      //fetched q from query paramters, now search stations
       if (candidates.length === 0) {
         res
           .status(404)

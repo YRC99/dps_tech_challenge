@@ -99,17 +99,21 @@ repro. No code was changed — findings only.
 No fixes were applied in this pass — this is a review/findings summary only.
 
 Fixed:
+
 1. 
-2. ✅
-3. 
-4. ✅
-5. ✅
-6. ✅
-7. ✅
-8. ✅
-9. ✅
+2.    ✅
+3.    Unfortunately intended, part of problem statement ("The application returns all")
+4.    ✅
+5.    ✅
+6.    ✅
+7.    ✅
+8.    ✅
+9.    ✅
 10. 
 
-Further usage of ChatGPT mostly to interpret the documentation of the API of irail.be and minor setup questions for typescript (has been a while since the last project, also for experiments like trying to convert the json schemas of the API to OpenAPI aand then use the generators, was discarded)
+Further usage of ChatGPT mostly to interpret the documentation of the API of irail.be and some setup questions for typescript (has been a while since the last project, also for experiments like trying to convert the json schemas of the API to OpenAPI aand then use the generators, was abandonded later), I unfortunately have the habit to delete chats after I'm done with a topic, remembered too late to make a link, sorry  
 
-otherwise for commit message
+
+Inline Copilot completions for faster typing (of course checking for correctness)
+
+otherwise for commit messages
