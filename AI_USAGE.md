@@ -180,12 +180,14 @@ Fixed:
 ## Further uses
 
 - ChatGPT:
-  - mostly to interpret the documentation of the API of irail.be and some setup questions for typescript (has been a while since the last project, also for experiments like trying to convert the json schemas of the API to OpenAPI and then use the generators, was abandonded later)
+  - mostly to interpret the documentation of the API of irail.be and some setup questions for typescript (has been a while since the last project, also for experiments like trying to convert the json schemas of the API to OpenAPI and then use the generators, was abandoned later)
   - unfortunately have the habit to delete chats after I'm done with a topic, remembered too late to make a link, sorry
 - Github Copilot:
-  - Inline Copilot completions for faster typing (of course checking for correctness)
+  - Inline Copilot completions for faster typing (of course checking for correctness) and batch changes (like extracting multiple fields)
   - otherwise for commit messages
 
 ## Link collection:
 
+https://chatgpt.com/share/6a2f1744-51e4-83eb-af04-9ac260131693
 https://chatgpt.com/share/6a2ecf9f-787c-83ed-850e-10cce83846e8
+https://chatgpt.com/share/6a2f1761-c9ec-83ed-b2b5-2f857a7b59c1
