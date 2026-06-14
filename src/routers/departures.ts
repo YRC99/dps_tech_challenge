@@ -53,14 +53,18 @@ export function departuresRouter(stations: Station[]) {
             .then((response: { data: LiveboardResponse }) => {
               let data = response.data;
               let departures = data.departures;
-              let res = {
+              let res: DepartureEntry = {
                 station: response.data.stationinfo.standardname,
+                type: "success",
                 departures: departures.departure.map((departure) => {
                   return {
                     trainnumber: departure.vehicleinfo.shortname,
                     destination: departure.stationinfo.standardname,
                     time: departure.time,
                     delay: departure.delay,
+                    timeString: new Date(
+                      departure.time * 1000,
+                    ).toLocaleTimeString(),
                   };
                 }),
               };

@@ -1,5 +1,20 @@
 # AI Usage Log
 
+## 2026-06-14 — Fix `tsc` error in departures router (Claude Code / Sonnet 4.6)
+
+**Prompt:** "Find a way to get the type check passing in `departures.ts`."
+
+**What was done:** Ran `tsc --noEmit` and found a single error at
+`src/routers/departures.ts:69` — the locally-built `res` object's `type:
+"success"` field was widened to `string`, so it didn't match the
+`SuccessfulDepartureEntry` variant of `DepartureEntry` (`src/models/responses/DepartureEntry.ts`),
+which requires the literal type `"success"`. Proposed annotating `res` as
+`: DepartureEntry` so the literal is checked against (and narrowed to) that
+type, and removing a stray `type: "success"` field on each individual
+departure item that isn't part of the `SuccessfulDepartureEntry["departures"]`
+shape. The fix was applied directly in the editor; `tsc --noEmit` now passes
+with no errors.
+
 ## 2026-06-14 — Code review (Claude Code / Sonnet 4.6)
 
 **Prompt:** "Go over the code and point out major problems."
@@ -117,3 +132,7 @@ Further usage of ChatGPT mostly to interpret the documentation of the API of ira
 Inline Copilot completions for faster typing (of course checking for correctness)
 
 otherwise for commit messages
+
+
+Link collection:
+https://chatgpt.com/share/6a2ecf9f-787c-83ed-850e-10cce83846e8

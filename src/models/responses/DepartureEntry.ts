@@ -5,6 +5,7 @@ interface SuccessfulDepartureEntry {
     trainnumber: string;
     destination: string;
     time: number;
+    timeString?: string;
     delay: number;
   }[];
 }
