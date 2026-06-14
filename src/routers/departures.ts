@@ -77,11 +77,11 @@ export function departuresRouter(stations: Station[]) {
                 station.name,
                 error,
               );
-              return {
+              departuresList.push({
                 station: station.name,
                 type: "error",
                 error: "Failed to fetch departures",
-              } as DepartureEntry;
+              });
             }),
         ),
       );
