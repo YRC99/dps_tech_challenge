@@ -1,13 +1,15 @@
+interface StationDepartureEntry {
+  trainnumber: string;
+  destination: string;
+  time: number;
+  timeString?: string;
+  delay: number;
+}
+
 interface SuccessfulDepartureEntry {
   station: string;
   type: "success";
-  departures: {
-    trainnumber: string;
-    destination: string;
-    time: number;
-    timeString?: string;
-    delay: number;
-  }[];
+  departures: StationDepartureEntry[];
 }
 interface ErrorDepartureEntry {
   station: string;
@@ -15,4 +17,4 @@ interface ErrorDepartureEntry {
   error: string;
 }
 type DepartureEntry = SuccessfulDepartureEntry | ErrorDepartureEntry;
-export type { DepartureEntry };
+export type { DepartureEntry, StationDepartureEntry };

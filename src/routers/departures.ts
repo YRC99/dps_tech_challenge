@@ -4,7 +4,10 @@ import axios from "axios";
 import { timeLogger } from "../middlewares/timeLogger.js";
 import type { LiveboardResponse } from "../models/responses/upstream/LiveboardResponse.js";
 import Fuse from "fuse.js";
-import type { DepartureEntry } from "../models/responses/DepartureEntry.js";
+import type {
+  DepartureEntry,
+  StationDepartureEntry,
+} from "../models/responses/DepartureEntry.js";
 type DeparturesQuery = {
   q?: string;
 };
@@ -52,22 +55,30 @@ export function departuresRouter(stations: Station[]) {
               `https://api.irail.be/liveboard?id=${station.id}&arrdep=departure&format=json`,
             )
             .then((response: { data: LiveboardResponse }) => {
-              let data = response.data;
-              let departures = data.departures;
-              let res: DepartureEntry = {
+              const data = response.data;
+              const departures = data.departures;
+              const departuresForStation: StationDepartureEntry[] = [];
+              departures.departure.forEach((departure) => {
+                const time = Number(departure.time);
+                const delay = Number(departure.delay);
+                if (time + delay > maxTime) return;
+                const trainnumber = departure.vehicleinfo.shortname;
+                const destination = departure.stationinfo.standardname;
+                departuresForStation.push({
+                  trainnumber: trainnumber,
+                  destination: destination,
+                  time: time,
+                  delay: delay,
+                  timeString: `Departure Time including delay: ${new Date(
+                    (Number(time) + Number(delay)) * 1000,
+                  ).toLocaleTimeString()}`,
+                });
+              });
+              if (departuresForStation.length === 0) return;
+              const res: DepartureEntry = {
                 station: response.data.stationinfo.standardname,
                 type: "success",
-                departures: departures.departure.map((departure) => {
-                  return {
-                    trainnumber: departure.vehicleinfo.shortname,
-                    destination: departure.stationinfo.standardname,
-                    time: departure.time,
-                    delay: departure.delay,
-                    timeString: `Departure Time including delay: ${new Date(
-                      (Number(departure.time) + Number(departure.delay)) * 1000,
-                    ).toLocaleTimeString()}`,
-                  };
-                }),
+                departures: departuresForStation,
               };
               departuresList.push(res);
             })
@@ -85,21 +96,12 @@ export function departuresRouter(stations: Station[]) {
             }),
         ),
       );
-      let filteredDepartures = departuresList
-        .map((departure) => {
-          if (departure.type === "success")
-            departure.departures = departure.departures.filter(
-              (departure) =>
-                Number(departure.time) + Number(departure.delay) <= maxTime,
-            );
-          return departure;
-        })
-        .filter((d) => d.type === "error" || d.departures.length > 0);
-      if (filteredDepartures.length === 0) {
+
+      if (departuresList.length === 0) {
         res
           .status(404)
           .json({ error: "No departures found for the given query" });
-      } else res.status(200).json({ content: filteredDepartures });
+      } else res.status(200).json({ content: departuresList });
     },
   );
   router.all("/departures", (req, res) => {
