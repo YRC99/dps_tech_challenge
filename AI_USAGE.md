@@ -1,5 +1,31 @@
 # AI Usage Log
 
+## Please note
+
+Claude Code for VSCode doesn't have any share function I could find, so it is logged in textual form
+
+## 2026-06-14 — Generate OpenAPI docs for routers (Claude Code / Sonnet 4.6)
+
+**Prompt:** "Generate OpenAPI docs for the current routers, using the sample
+`@openapi` block in `departures.ts` as a (not necessarily correct) example."
+
+**What was done:** `src/routers/docs.ts` already wires up `swagger-jsdoc` +
+`swagger-ui-express`, scanning `./src/routers/*.ts` for `@openapi` JSDoc
+blocks, but `departures.ts` only had a leftover placeholder documenting a
+non-existent `/users` endpoint. Replaced it with:
+
+- A `components.schemas` block for `StationDepartureEntry`,
+  `SuccessfulDepartureEntry`, `ErrorDepartureEntry`, `DepartureEntry`, and
+  `ErrorResponse`, matching `src/models/responses/DepartureEntry.ts`.
+- A `/departures` path doc covering the `q` query parameter (required,
+  min length 3) and the 200/400/404 responses, with a note that any other
+  HTTP method returns 405.
+
+Also added a `/` path doc to `src/routers/index.ts` for the existing
+"Hello, World!" health-check route. Verified `tsc --noEmit` still passes and
+that `swagger-jsdoc` parses the new blocks into a valid OpenAPI document
+(checked by running it standalone and inspecting the generated JSON).
+
 ## 2026-06-14 — Fix `tsc` error in departures router (Claude Code / Sonnet 4.6)
 
 **Prompt:** "Find a way to get the type check passing in `departures.ts`."
@@ -115,24 +141,26 @@ No fixes were applied in this pass — this is a review/findings summary only.
 
 Fixed:
 
-1.    ✅
-2.    ✅
-3.    Unfortunately intended, part of problem statement ("The application returns all")
-4.    ✅
-5.    ✅
-6.    ✅
-7.    ✅
-8.    ✅
-9.    ✅
-10. 
+1.  ✅
+2.  ✅
+3.  Unfortunately intended, part of problem statement ("The application returns all")
+4.  ✅
+5.  ✅
+6.  ✅
+7.  ✅
+8.  ✅
+9.  ✅
+10.
 
-Further usage of ChatGPT mostly to interpret the documentation of the API of irail.be and some setup questions for typescript (has been a while since the last project, also for experiments like trying to convert the json schemas of the API to OpenAPI aand then use the generators, was abandonded later), I unfortunately have the habit to delete chats after I'm done with a topic, remembered too late to make a link, sorry  
+## Further uses
 
+- ChatGPT:
+  - mostly to interpret the documentation of the API of irail.be and some setup questions for typescript (has been a while since the last project, also for experiments like trying to convert the json schemas of the API to OpenAPI and then use the generators, was abandonded later)
+  - unfortunately have the habit to delete chats after I'm done with a topic, remembered too late to make a link, sorry
+- Github Copilot:
+  - Inline Copilot completions for faster typing (of course checking for correctness)
+  - otherwise for commit messages
 
-Inline Copilot completions for faster typing (of course checking for correctness)
+## Link collection:
 
-otherwise for commit messages
-
-
-Link collection:
 https://chatgpt.com/share/6a2ecf9f-787c-83ed-850e-10cce83846e8

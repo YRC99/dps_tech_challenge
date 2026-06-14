@@ -5,6 +5,7 @@ import axios from "axios";
 import { departuresRouter as departures } from "./routers/departures.js";
 import { router as index } from "./routers/index.js";
 import { router as fallback } from "./routers/fallback.js";
+import { router as docs } from "./routers/docs.js";
 import type { StationResponse } from "./models/responses/upstream/StationResponse.js";
 import type { Station } from "./models/Station.js";
 import { exit } from "process";
@@ -33,10 +34,11 @@ try {
   app.use(express.json());
 
   //Routes
+
+  app.use(docs);
   app.use(departures(stationData));
   app.use(index);
   app.use(fallback);
-
   //Start the server
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
