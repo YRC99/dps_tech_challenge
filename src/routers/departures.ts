@@ -43,7 +43,8 @@ export function departuresRouter(stations: Station[]) {
       const departuresList: DepartureEntry[] = [];
 
       //15 minutes into the future (seconds due to the API using unix timestamps in seconds)
-      const maxTime = Math.floor(Date.now() / 1000 + 15 * 60);
+      const now = Math.floor(Date.now() / 1000);
+      const maxTime = Math.floor(now + 15 * 60);
       await Promise.all(
         candidates.map((station) =>
           axios
@@ -62,9 +63,9 @@ export function departuresRouter(stations: Station[]) {
                     destination: departure.stationinfo.standardname,
                     time: departure.time,
                     delay: departure.delay,
-                    timeString: new Date(
-                      departure.time * 1000,
-                    ).toLocaleTimeString(),
+                    timeString: `Departure Time including delay: ${new Date(
+                      (Number(departure.time) + Number(departure.delay)) * 1000,
+                    ).toLocaleTimeString()}`,
                   };
                 }),
               };
@@ -87,14 +88,12 @@ export function departuresRouter(stations: Station[]) {
         .map((departure) => {
           if (departure.type === "success")
             departure.departures = departure.departures.filter(
-              (departure) => departure.time <= maxTime,
+              (departure) =>
+                Number(departure.time) + Number(departure.delay) <= maxTime,
             );
           return departure;
         })
-        .filter((d) => {
-          if (d.type === "error") return true;
-          else return d.departures.length > 0;
-        });
+        .filter((d) => d.type === "error" || d.departures.length > 0);
       if (filteredDepartures.length === 0) {
         res
           .status(404)
