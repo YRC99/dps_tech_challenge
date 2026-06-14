@@ -2,8 +2,9 @@ import express from "express";
 import type { Station } from "../models/Station.js";
 import axios from "axios";
 import { timeLogger } from "../middlewares/timeLogger.js";
-import type { LiveboardResponse } from "../models/responses/LiveboardResponse.js";
+import type { LiveboardResponse } from "../models/responses/upstream/LiveboardResponse.js";
 import Fuse from "fuse.js";
+import type { DepartureEntry } from "../models/responses/DepartureEntry.js";
 type DeparturesQuery = {
   q?: string;
 };
@@ -39,9 +40,11 @@ export function departuresRouter(stations: Station[]) {
           .json({ error: "No departures found for the given query" });
         return;
       }
+      const departuresList: DepartureEntry[] = [];
+
       //15 minutes into the future (seconds due to the API using unix timestamps in seconds)
       const maxTime = Math.floor(Date.now() / 1000 + 15 * 60);
-      const departures = await Promise.all(
+      await Promise.all(
         candidates.map((station) =>
           axios
             .get<LiveboardResponse>(
@@ -61,18 +64,33 @@ export function departuresRouter(stations: Station[]) {
                   };
                 }),
               };
-              return res;
+              departuresList.push(res);
+            })
+            .catch((error) => {
+              console.error(
+                "Error fetching departures for station:",
+                station.name,
+                error,
+              );
+              return {
+                station: station.name,
+                error: "Failed to fetch departures",
+              } as DepartureEntry;
             }),
         ),
       );
-      let filteredDepartures = departures
+      let filteredDepartures = departuresList
         .map((departure) => {
-          departure.departures = departure.departures.filter(
-            (departure) => departure.time <= maxTime,
-          );
+          if (departure.type === "success")
+            departure.departures = departure.departures.filter(
+              (departure) => departure.time <= maxTime,
+            );
           return departure;
         })
-        .filter((d) => d.departures.length > 0);
+        .filter((d) => {
+          if (d.type === "error") return true;
+          else return d.departures.length > 0;
+        });
       if (filteredDepartures.length === 0) {
         res
           .status(404)
